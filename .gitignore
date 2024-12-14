@@ -1,0 +1,8 @@
+# Binaries
+/bin/
+/build/
+/logs/
+/.vscode/
+
+# Dependency directories
+/vendor/
