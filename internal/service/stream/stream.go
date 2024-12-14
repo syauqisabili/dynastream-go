@@ -29,8 +29,7 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 	// Check value pb.StartStreamRequest
 	if in == nil {
 		pkg.LogError("Invalid message request")
-		return nil, status.Errorf(
-			codes.InvalidArgument, "Invalid message request")
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid message request")
 	}
 
 	// Get the peer information from the context
@@ -76,8 +75,7 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 			stream.Uuid))
 	if err != nil {
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.Unavailable, "Failed to configure stream")
+		return nil, status.Errorf(codes.Unavailable, "Failed to configure stream")
 	}
 
 	switch resp.StatusCode() {
@@ -106,17 +104,14 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 		stream.Uuid)
 	pkg.LogInfo(fmt.Sprintf("Streaming on %s", url))
 
-	return &pb.StartStreamResponse{
-		StreamUrl: url,
-	}, nil
+	return &pb.StartStreamResponse{StreamUrl: url}, nil
 }
 
 func (*Server) StopStream(ctx context.Context, in *pb.StopStreamRequest) (*emptypb.Empty, error) {
 	// Check value pb.StartStreamRequest
 	if in == nil {
 		pkg.LogError("Invalid message request")
-		return nil, status.Errorf(
-			codes.InvalidArgument, "Invalid message request")
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid message request")
 	}
 
 	// Get the peer information from the context
