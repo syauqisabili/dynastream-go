@@ -78,6 +78,27 @@ func (r *streamRepository) GetAll() ([]*domain.Stream, error) {
 	return results, nil
 }
 
+func (r *streamRepository) FindByUuid(uuid string) *domain.Stream {
+	defer r.client.Close()
+
+	// Get the value for each key
+	value, err := r.client.Get(r.ctx, fmt.Sprintf("log:stream:%s", uuid)).Result()
+	if err != nil {
+		return nil
+	}
+
+	// Unmarshal the JSON into the struct
+	var result *domain.Stream
+	if err := json.Unmarshal([]byte(value), &result); err != nil {
+		return nil
+	}
+	if result.Uuid == uuid {
+		return result
+	}
+
+	return nil
+}
+
 func (r *streamRepository) Insert(stream *domain.Stream) error {
 	defer r.client.Close()
 
