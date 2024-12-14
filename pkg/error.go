@@ -13,6 +13,7 @@ const (
 	ErrCodeResourceNotFound = 1007
 	ErrCodeDirNotFound      = 1008
 	ErrCodeUnsupportedOs    = 1009
+	ErrCodeProcessFail      = 1010
 )
 
 type Error struct {
