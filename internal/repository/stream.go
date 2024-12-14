@@ -40,9 +40,9 @@ func (r *streamRepository) Close() {
 	r.client.Close()
 }
 
-func (r *streamRepository) GetAll() ([]domain.Stream, error) {
+func (r *streamRepository) GetAll() ([]*domain.Stream, error) {
 	var cursor uint64
-	var results []domain.Stream
+	var results []*domain.Stream
 
 	for {
 		// Scan for matching keys
@@ -68,7 +68,7 @@ func (r *streamRepository) GetAll() ([]domain.Stream, error) {
 				return nil, err
 			}
 			// Add the result to the results slice
-			results = append(results, *result)
+			results = append(results, result)
 		}
 
 		// Break if cursor is 0 (no more keys)

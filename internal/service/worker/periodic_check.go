@@ -47,16 +47,16 @@ func inactiveSessionHandler() error {
 	match := false
 	for _, stream := range streams {
 		match = false
-		pkg.LogInfo(stream)
 		for _, session := range sessions.Items {
 			if stream.Uuid == session.Path {
+				pkg.LogInfo(fmt.Sprintf("%v Active", *stream))
 				match = true
 				break
 			}
 		}
 
 		if !match {
-
+			pkg.LogInfo(fmt.Sprintf("%v Inactive", *stream))
 			// Stop stream path
 			client := resty.New()
 			resp, err := client.R().
