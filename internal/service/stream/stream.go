@@ -30,8 +30,7 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 	if in == nil {
 		pkg.LogError("Invalid message request")
 		return nil, status.Errorf(
-			codes.InvalidArgument,
-			"Invalid message request")
+			codes.InvalidArgument, "Invalid message request")
 	}
 
 	// Get the peer information from the context
@@ -84,12 +83,10 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 	switch resp.StatusCode() {
 	case 400:
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.FailedPrecondition, "Failed to add stream session: %d", resp.StatusCode())
+		return nil, status.Errorf(codes.FailedPrecondition, "Failed to add stream session: %d", resp.StatusCode())
 	case 500:
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.Unimplemented, "Failed to add stream session: %d", resp.StatusCode())
+		return nil, status.Errorf(codes.Unimplemented, "Failed to add stream session: %d", resp.StatusCode())
 
 	}
 
@@ -97,8 +94,7 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 	repo := repository.NewStream()
 	if err := repo.Insert(stream); err != nil {
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.Unknown, "Cannot do streaming")
+		return nil, status.Errorf(codes.Unknown, "Cannot do streaming")
 	}
 
 	// Set stream url
@@ -116,9 +112,9 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 func (*Server) StopStream(ctx context.Context, in *pb.StopStreamRequest) (*emptypb.Empty, error) {
 	// Check value pb.StartStreamRequest
 	if in == nil {
+		pkg.LogError("Invalid message request")
 		return nil, status.Errorf(
-			codes.InvalidArgument,
-			"Invalid message request")
+			codes.InvalidArgument, "Invalid message request")
 	}
 
 	// Get the peer information from the context
@@ -134,6 +130,15 @@ func (*Server) StopStream(ctx context.Context, in *pb.StopStreamRequest) (*empty
 	}
 	uuid := strings.TrimSuffix(parsedUrl.Path, "/")
 	uuid = strings.TrimPrefix(uuid, "/")
+
+	repo := repository.NewStream()
+
+	// Find stream by uuid
+	stream := repo.FindByUuid(uuid)
+	if stream == nil {
+		pkg.LogError("Stream with specified id not found")
+		return nil, status.Errorf(codes.NotFound, "Stream with specified id not found")
+	}
 
 	// Stop stream
 	httpClient := resty.New()
@@ -161,7 +166,6 @@ func (*Server) StopStream(ctx context.Context, in *pb.StopStreamRequest) (*empty
 
 	}
 	// Delete uuid on redis
-	repo := repository.NewStream()
 	if err := repo.Delete(uuid); err != nil {
 		return nil, status.Errorf(
 			codes.Unknown, "Fail to close stream")
