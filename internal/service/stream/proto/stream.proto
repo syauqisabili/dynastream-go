@@ -1,0 +1,26 @@
+syntax = "proto3";
+package stream;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "stream-session-api/internal/service/stream/proto";
+
+message StartStreamRequest {
+    string username = 1;
+    string stream_id = 2;
+}
+
+message StartStreamResponse {
+    string stream_url = 1;
+}
+
+message StopStreamRequest {
+    string username = 1;
+    string stream_url = 2;
+}
+
+
+service StreamService {
+    rpc StartStream (StartStreamRequest) returns (StartStreamResponse);
+    rpc StopStream (StopStreamRequest) returns (google.protobuf.Empty);
+}

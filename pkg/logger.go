@@ -24,10 +24,9 @@ var LogFile *lumberjack.Logger
 
 // init initializes the logger instance.
 func init() {
-	// Load the .env file (once)
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Fail to read .env")
+		log.Fatal("Failed to read .env")
 		os.Exit(1)
 	}
 
@@ -40,20 +39,20 @@ func init() {
 	case "linux":
 		dir, err := os.UserHomeDir()
 		if err != nil {
-			log.Fatal("Fail to find home directory")
+			log.Fatal("Failed to find home directory")
 			os.Exit(1)
 		}
 
-		applicationDir = dir + "/"
+		applicationDir = dir + "/data"
 	}
 	// Create logs directory if it doesn't exist
-	dir := fmt.Sprintf("%s%s", applicationDir, os.Getenv("APPLICATION_NAME"))
+	dir := fmt.Sprintf("%s/%s", applicationDir, os.Getenv("APPLICATION_NAME"))
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		log.Fatal("Error creating log directory:", err)
 		os.Exit(1)
 	}
 
-	pathFile := fmt.Sprintf("%s%s/%s", applicationDir, os.Getenv("APPLICATION_NAME"), os.Getenv("FILENAME_LOG"))
+	pathFile := fmt.Sprintf("%s/%s/%s", applicationDir, os.Getenv("APPLICATION_NAME"), os.Getenv("FILENAME_LOG"))
 	LogFile = &lumberjack.Logger{
 		Filename:   pathFile, // Log file name
 		MaxSize:    10,       // Maximum size in megabytes before rotation
@@ -70,4 +69,24 @@ func init() {
 		logger.SetReportTimestamp(true)
 
 	})
+}
+
+func LogInfo(msg interface{}, keyvals ...interface{}) {
+	logger.Info(msg, keyvals...)
+}
+
+func LogDebug(msg interface{}, keyvals ...interface{}) {
+	logger.Debug(msg, keyvals...)
+}
+
+func LogWarn(msg interface{}, keyvals ...interface{}) {
+	logger.Warn(msg, keyvals...)
+}
+
+func LogError(msg interface{}, keyvals ...interface{}) {
+	logger.Error(msg, keyvals...)
+}
+
+func LogFatal(msg interface{}, keyvals ...interface{}) {
+	logger.Fatal(msg, keyvals...)
 }
