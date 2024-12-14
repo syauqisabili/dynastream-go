@@ -6,7 +6,8 @@ type Stream struct {
 }
 
 type StreamRepository interface {
-	GetAll() ([]*Stream, error)
+	Close()
+	GetAll() ([]Stream, error)
 	FindByUuid(uuid string) *Stream
 	Insert(stream *Stream) error
 	Delete(uuid string) error

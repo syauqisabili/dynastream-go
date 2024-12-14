@@ -36,20 +36,19 @@ func NewStream() domain.StreamRepository {
 	}
 }
 
-func (r *streamRepository) GetAll() ([]*domain.Stream, error) {
-	defer r.client.Close()
+func (r *streamRepository) Close() {
+	r.client.Close()
+}
 
+func (r *streamRepository) GetAll() ([]domain.Stream, error) {
 	var cursor uint64
-	var results []*domain.Stream
-
-	// Unmarshal the JSON into the struct
-	result := new(domain.Stream)
+	var results []domain.Stream
 
 	for {
 		// Scan for matching keys
 		var keys []string
 		var err error
-		keys, cursor, err = r.client.Scan(r.ctx, cursor, "log:target:*", 0).Result()
+		keys, cursor, err = r.client.Scan(r.ctx, cursor, "log:stream:*", 0).Result()
 		if err != nil {
 			return nil, err
 		}
@@ -62,11 +61,14 @@ func (r *streamRepository) GetAll() ([]*domain.Stream, error) {
 				return nil, err
 			}
 
+			// Unmarshal the JSON into the struct
+			result := &domain.Stream{}
+
 			if err := json.Unmarshal([]byte(value), result); err != nil {
 				return nil, err
 			}
 			// Add the result to the results slice
-			results = append(results, result)
+			results = append(results, *result)
 		}
 
 		// Break if cursor is 0 (no more keys)
@@ -79,8 +81,6 @@ func (r *streamRepository) GetAll() ([]*domain.Stream, error) {
 }
 
 func (r *streamRepository) FindByUuid(uuid string) *domain.Stream {
-	defer r.client.Close()
-
 	// Get the value for each key
 	value, err := r.client.Get(r.ctx, fmt.Sprintf("log:stream:%s", uuid)).Result()
 	if err != nil {
@@ -100,8 +100,7 @@ func (r *streamRepository) FindByUuid(uuid string) *domain.Stream {
 }
 
 func (r *streamRepository) Insert(stream *domain.Stream) error {
-	defer r.client.Close()
-
+	// Marshal the struct into JSON
 	json, err := json.Marshal(stream)
 	if err != nil {
 		return err
@@ -117,18 +116,9 @@ func (r *streamRepository) Insert(stream *domain.Stream) error {
 }
 
 func (r *streamRepository) Delete(uuid string) error {
-	defer r.client.Close()
-
-	iter := r.client.Scan(r.ctx, 0, fmt.Sprintf("log:stream:%s", uuid), 0).Iterator()
-	for iter.Next(r.ctx) {
-		err := r.client.Del(r.ctx, iter.Val()).Err()
-		if err != nil {
-			return err
-		}
-	}
-	if err := iter.Err(); err != nil {
+	key := fmt.Sprintf("log:stream:%s", uuid)
+	if err := r.client.Del(r.ctx, key).Err(); err != nil {
 		return err
 	}
-
 	return nil
 }

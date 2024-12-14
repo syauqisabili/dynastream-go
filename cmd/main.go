@@ -35,7 +35,6 @@ func main() {
 	}
 
 	go worker.GrpcServer()
-	// TODO: Periodic sream session cleanup
-
+	go worker.PeriodicStreamSessionCheck()
 	select {}
 }

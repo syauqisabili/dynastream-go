@@ -92,6 +92,8 @@ func (*Server) StartStream(ctx context.Context, in *pb.StartStreamRequest) (*pb.
 
 	// Insert stream url to redis
 	repo := repository.NewStream()
+	defer repo.Close()
+
 	if err := repo.Insert(stream); err != nil {
 		pkg.LogError(err)
 		return nil, status.Errorf(codes.Unknown, "Cannot do streaming")
@@ -132,6 +134,7 @@ func (*Server) StopStream(ctx context.Context, in *pb.StopStreamRequest) (*empty
 	uuid = strings.TrimPrefix(uuid, "/")
 
 	repo := repository.NewStream()
+	defer repo.Close()
 
 	// Find stream by uuid
 	stream := repo.FindByUuid(uuid)
@@ -151,26 +154,21 @@ func (*Server) StopStream(ctx context.Context, in *pb.StopStreamRequest) (*empty
 
 	if err != nil {
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.Unavailable, "Failed to stop stream")
+		return nil, status.Errorf(codes.Unavailable, "Failed to stop stream")
 	}
 	switch resp.StatusCode() {
 	case 400:
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.FailedPrecondition, "Failed to remove stream session: %d", resp.StatusCode())
+		return nil, status.Errorf(codes.FailedPrecondition, "Failed to remove stream session: %d", resp.StatusCode())
 	case 500:
 		pkg.LogError(err)
-		return nil, status.Errorf(
-			codes.Unimplemented, "Failed to remove stream session: %d", resp.StatusCode())
+		return nil, status.Errorf(codes.Unimplemented, "Failed to remove stream session: %d", resp.StatusCode())
 
 	}
 	// Delete uuid on redis
 	if err := repo.Delete(uuid); err != nil {
-		return nil, status.Errorf(
-			codes.Unknown, "Fail to close stream")
+		return nil, status.Errorf(codes.Unknown, "Fail to close stream")
 	}
 
-	//! Temporary
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }
