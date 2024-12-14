@@ -44,9 +44,8 @@ func inactiveSessionHandler() error {
 	}
 
 	// Cleanup inactive session
-	match := false
 	for _, stream := range streams {
-		match = false
+		match := false
 		for _, session := range sessions.Items {
 			if stream.Uuid == session.Path {
 				pkg.LogInfo(fmt.Sprintf("%v Active", *stream))
