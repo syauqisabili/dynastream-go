@@ -36,8 +36,13 @@ Before running the application, ensure the following are installed:
   sudo apt install make
   make --version
 ```
+- Redis. Please visit [Redis](https://redis.io/downloads/) or you can run via docker:
+```bash
+  docker run -d --name redis-stack-server -p 6379:6379 redis/redis-stack-server:latest
+```
 - Media server. Visit official github repository for [MediaMTX](https://bluenviron.github.io/mediamtx/)
 - Media conversion and processing. Visit official website: [FFmpeg](https://www.ffmpeg.org/)
+
 
 ## Installation
 
