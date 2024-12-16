@@ -41,7 +41,7 @@ endif
 project := stream
 
 run:
-	@go run cmd/main.go
+	@go run ${APP_DIR}/main.go
 
 build: ## Build app
 	go build -o ${BIN_DIR}/${APP_BIN} ./${APP_DIR}
