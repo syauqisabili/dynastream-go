@@ -2,7 +2,10 @@
 # Stression GO
 
 Stression is a microservice (gRPC based API) which provides stream session with dynamic url. This project prevents client from accessing video stream directly.
-
+<p align="left">
+  <img src="assets/static-url-diagram.jpg" alt="Static URL" width="500">
+  <img src="assets/dynamic-url-diagram.jpg" alt="Dynamic URL" width="720">
+</p>
 
 ## Features
 

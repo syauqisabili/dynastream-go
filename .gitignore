@@ -3,6 +3,5 @@
 /build/
 /logs/
 /.vscode/
-
 # Dependency directories
 /vendor/
