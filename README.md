@@ -57,13 +57,12 @@ Before running the application, ensure the following are installed:
 ```
 - Start the application:
 ```bash
-  go run cmd/app/main.go
+  make run
 ```
 - Or you want to build:
 ```bash
   make build
 ```
-
 - If you want to modify .proto files, regenerate the Go code using:
 ```bash
   make stream
