@@ -73,7 +73,7 @@ Before running the application, ensure the following are installed:
 You can modify the configuration in `settings.ini` and check the log in `app.log`. The file locations depend on your system.
 - For Linux:
 ```bash
-  home/data/stream-session-api/
+  home/$USER/data/stream-session-api/
 ```
 - For Windows:
 ```bash
