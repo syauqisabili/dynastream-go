@@ -40,7 +40,7 @@ func inactiveSessionHandler() error {
 
 	streams, err := repo.GetAll()
 	if err != nil || streams == nil {
-		return pkg.ErrorStatus(pkg.ErrCodeProcessFail, "Stream list not found")
+		return pkg.NewError(pkg.ErrProcessFail, fmt.Errorf("stream list not found"))
 	}
 
 	// Cleanup inactive session
@@ -48,14 +48,14 @@ func inactiveSessionHandler() error {
 		match := false
 		for _, session := range sessions.Items {
 			if stream.Uuid == session.Path {
-				pkg.LogInfo(fmt.Sprintf("%v Active", *stream))
+				pkg.LogInfo(fmt.Sprintf("%v active", *stream))
 				match = true
 				break
 			}
 		}
 
 		if !match {
-			pkg.LogInfo(fmt.Sprintf("%v Inactive", *stream))
+			pkg.LogInfo(fmt.Sprintf("%v inactive", *stream))
 			// Stop stream path
 			client := resty.New()
 			resp, err := client.R().
@@ -65,15 +65,15 @@ func inactiveSessionHandler() error {
 					stream.Uuid))
 
 			if err != nil {
-				return pkg.ErrorStatus(pkg.ErrCodeProcessFail, "Fail to stop stream")
+				return pkg.NewError(pkg.ErrProcessFail, fmt.Errorf("failed to stop stream"))
 			}
 			if resp.StatusCode() != 200 {
-				return pkg.ErrorStatus(pkg.ErrCodeProcessFail, fmt.Sprintf("Fail to delete path stream: %d", resp.StatusCode()))
+				return pkg.NewError(pkg.ErrProcessFail, fmt.Errorf("%d failed to delete path stream", resp.StatusCode()))
 			}
 
 			// Delete stream redis log
 			if err := repo.Delete(stream.Uuid); err != nil {
-				return pkg.ErrorStatus(pkg.ErrCodeProcessFail, "Fail to close stream")
+				return pkg.NewError(pkg.ErrProcessFail, fmt.Errorf("failed to close stream"))
 			}
 		}
 	}
@@ -97,7 +97,7 @@ func PeriodicStreamSessionCheck() {
 			// Check inactive Stream Session
 			err := inactiveSessionHandler()
 			if err != nil {
-				pkg.LogWarn(fmt.Sprintf("Failed to check stream session: %s", err))
+				pkg.LogWarn(fmt.Sprintf("failed to check stream session: %v", err))
 			}
 		}
 	}()

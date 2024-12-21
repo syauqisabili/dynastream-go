@@ -20,19 +20,19 @@ func GetDir() (string, error) {
 	case "linux":
 		dir, err := os.UserHomeDir()
 		if err != nil {
-			return "", pkg.ErrorStatus(pkg.ErrCodeDirNotFound, "Failed to find home dir")
+			return "", fmt.Errorf("home directory not found")
 		}
 		applicationDir := dir + "/data"
 		return applicationDir, nil
 
 	default:
-		return "", pkg.ErrorStatus(pkg.ErrCodeUnsupportedOs, "Unsupported OS")
+		return "", fmt.Errorf("unsupported OS")
 	}
 
 }
 
 func setDefault() {
-	pkg.LogInfo("Set default conf...")
+	pkg.LogInfo("set default conf...")
 
 	conf := network.Get()
 
@@ -68,7 +68,7 @@ func setDefault() {
 }
 
 func show() error {
-	pkg.LogInfo("Show conf...")
+	pkg.LogInfo("show conf...")
 
 	// Get application dir
 	applicationDir, err := GetDir()
@@ -79,13 +79,13 @@ func show() error {
 	// Check config.ini if it doesn't exist
 	pathFile := fmt.Sprintf("%s/%s/%s", applicationDir, os.Getenv("APPLICATION_NAME"), os.Getenv("FILENAME_CONFIG"))
 	if _, err := os.Stat(pathFile); err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeFileNotFound, fmt.Sprintf("%s does not exist!", pathFile))
+		return pkg.NewError(pkg.ErrFileNotFound, err)
 	}
 
 	// Read config.ini
 	config, err := ini.Load(pathFile)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeReadFile, fmt.Sprintf("Failed to read %s ", pathFile))
+		return pkg.NewError(pkg.ErrReadFile, err)
 	}
 
 	// Iterate over all sections
@@ -106,7 +106,7 @@ func show() error {
 }
 
 func write() error {
-	pkg.LogInfo("Write conf...")
+	pkg.LogInfo("write conf...")
 
 	// Get application dir
 	applicationDir, err := GetDir()
@@ -117,13 +117,13 @@ func write() error {
 	// Check config.ini if it doesn't exist
 	pathFile := fmt.Sprintf("%s/%s/%s", applicationDir, os.Getenv("APPLICATION_NAME"), os.Getenv("FILENAME_CONFIG"))
 	if _, err := os.Stat(pathFile); err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeFileNotFound, fmt.Sprintf("%s does not exist!", pathFile))
+		return pkg.NewError(pkg.ErrFileNotFound, err)
 	}
 
 	// Read .ini file
 	settings, err := ini.Load(pathFile)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeReadFile, fmt.Sprintf("Failed to read %s ", pathFile))
+		return pkg.NewError(pkg.ErrReadFile, err)
 	}
 
 	// Get config instance
@@ -132,96 +132,96 @@ func write() error {
 	// Grpc server section
 	sec, err := settings.NewSection("grpc")
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("ip", conf.Grpc.Ip)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("port", strconv.FormatUint(uint64(conf.Grpc.Port), 10))
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 
 	// Mediamtx http server section
 	sec, err = settings.NewSection("mediamtx.http")
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("ip", conf.MediaMtx.Http.Ip)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("port", strconv.FormatUint(uint64(conf.MediaMtx.Http.Port), 10))
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 
 	// Mediamtx rtsp server section
 	sec, err = settings.NewSection("mediamtx.rtsp")
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("ip", conf.MediaMtx.Rtsp.Ip)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("port", strconv.FormatUint(uint64(conf.MediaMtx.Rtsp.Port), 10))
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("path", conf.MediaMtx.Rtsp.Path)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 
 	// Mediammtx webrtc server section
 	sec, err = settings.NewSection("mediamtx.webrtc")
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("ip", conf.MediaMtx.WebRtc.Ip)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("port", strconv.FormatUint(uint64(conf.MediaMtx.WebRtc.Port), 10))
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 
 	// Redis
 	sec, err = settings.NewSection("redis")
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("ip", conf.Redis.Ip)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("port", strconv.FormatUint(uint64(conf.Redis.Port), 10))
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("password", conf.Redis.Password)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 	_, err = sec.NewKey("database_index", strconv.FormatUint(uint64(conf.Redis.DatabaseIndex), 10))
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeWriteFile, fmt.Sprintf("Failed to write to %s ", pathFile))
+		return pkg.NewError(pkg.ErrWriteFile, err)
 	}
 
 	// Save to file
 	err = settings.SaveTo(pathFile)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeSaveFile, fmt.Sprintf("Failed to save %s ", pathFile))
+		return pkg.NewError(pkg.ErrSaveFile, err)
 	}
 
 	return nil
 }
 
 func read() error {
-	pkg.LogInfo("Read conf...")
+	pkg.LogInfo("read conf...")
 
 	// Get application dir
 	applicationDir, err := GetDir()
@@ -232,13 +232,13 @@ func read() error {
 	// Check .ini file if it doesn't exist
 	pathFile := fmt.Sprintf("%s/%s/%s", applicationDir, os.Getenv("APPLICATION_NAME"), os.Getenv("FILENAME_CONFIG"))
 	if _, err := os.Stat(pathFile); err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeFileNotFound, fmt.Sprintf("%s does not exist!", pathFile))
+		return pkg.NewError(pkg.ErrFileNotFound, err)
 	}
 
 	// Read config.ini
 	settings, err := ini.Load(pathFile)
 	if err != nil {
-		return pkg.ErrorStatus(pkg.ErrCodeReadFile, fmt.Sprintf("Failed to read %s ", pathFile))
+		return pkg.NewError(pkg.ErrReadFile, err)
 	}
 
 	// Get config instance
@@ -283,7 +283,7 @@ func read() error {
 }
 
 func Get() error {
-	pkg.LogInfo("Get conf...")
+	pkg.LogInfo("get conf...")
 
 	// Get application dir
 	applicationDir, err := GetDir()
@@ -297,7 +297,7 @@ func Get() error {
 		// File does not exist, so create it.
 		file, err := os.Create(pathFile)
 		if err != nil {
-			return pkg.ErrorStatus(pkg.ErrCodeCreateFile, fmt.Sprintf("Failed to create %s", pathFile))
+			return pkg.NewError(pkg.ErrCreateFile, err)
 		}
 		defer file.Close()
 

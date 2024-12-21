@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -36,6 +35,9 @@ func init() {
 	switch runtime {
 	case "windows":
 		applicationDir = os.Getenv("DATA_DIR_WIN")
+		if applicationDir == "" {
+			applicationDir = "C:/ProgramData/"
+		}
 	case "linux":
 		dir, err := os.UserHomeDir()
 		if err != nil {

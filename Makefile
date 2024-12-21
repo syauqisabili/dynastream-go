@@ -3,7 +3,7 @@ PROTO_DIR = proto
 WIN_DIR = win
 LINUX_DIR = linux
 APP_DIR = cmd
-APP_NAME = stression
+APP_NAME = dynastream
 
 ifeq ($(OS), Windows_NT)
 	SHELL := powershell.exe

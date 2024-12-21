@@ -1,7 +1,6 @@
+# Dynastream GO
 
-# Stression GO
-
-Stression is a microservice (gRPC based API) which provides stream session with dynamic url. This project prevents client from accessing video stream directly.
+Dynastream is a microservice (gRPC based API) which provides stream session with dynamic url. This project prevents client from accessing video stream directly.
 <p align="left">
   <img src="assets/static-url-diagram.jpg" alt="Static URL" width="500">
   <img src="assets/dynamic-url-diagram.jpg" alt="Dynamic URL" width="720">
@@ -51,8 +50,8 @@ Before running the application, ensure the following are installed:
 
 - Clone Repository:
 ```bash
-  git clone https://github.com/syauqisabili/stression-go.git
-  cd stression-go
+  git clone https://github.com/syauqisabili/dynastream-go.git
+  cd dynastream-go
 ```
 - Install dependencies:
 ```bash

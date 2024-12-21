@@ -1,35 +1,43 @@
 package pkg
 
-import "fmt"
+import "errors"
 
-// Error represents an error with a code and message.
-const (
-	ErrCodeNotFound         = 1001
-	ErrCodeFileNotFound     = 1002
-	ErrCodeCreateFile       = 1003
-	ErrCodeReadFile         = 1004
-	ErrCodeWriteFile        = 1005
-	ErrCodeSaveFile         = 1006
-	ErrCodeResourceNotFound = 1007
-	ErrCodeDirNotFound      = 1008
-	ErrCodeUnsupportedOs    = 1009
-	ErrCodeProcessFail      = 1010
+var (
+	ErrBadRequest       = errors.New("bad request")
+	ErrNotFound         = errors.New("not found")
+	ErrFileNotFound     = errors.New("file not found")
+	ErrCreateFile       = errors.New("create file")
+	ErrReadFile         = errors.New("read file")
+	ErrWriteFile        = errors.New("write file")
+	ErrSaveFile         = errors.New("save file")
+	ErrDirNotFound      = errors.New("directory not found")
+	ErrCreateDir        = errors.New("create directory")
+	ErrResourceNotFound = errors.New("resource not found")
+	ErrUnsupportedOs    = errors.New("unsupported os")
+	ErrInternalFailure  = errors.New("internal failure")
+	ErrProcessFail      = errors.New("process fail")
 )
 
 type Error struct {
-	Code    int
-	Message string
+	appError error
+	svcError error
 }
 
-// Error implements the error interface for Error.
-func (e *Error) Error() string {
-	return fmt.Sprintf("Code: %d, Message: %s", e.Code, e.Message)
-}
-
-// Error creates a new Error with the given code and message.
-func ErrorStatus(code int, message string) *Error {
-	return &Error{
-		Code:    code,
-		Message: message,
+func NewError(svcError, appError error) error {
+	return Error{
+		svcError: svcError,
+		appError: appError,
 	}
+}
+
+func (e Error) AppError() error {
+	return e.appError
+}
+
+func (e Error) SvcError() error {
+	return e.svcError
+}
+
+func (e Error) Error() string {
+	return errors.Join(e.svcError, e.appError).Error()
 }
